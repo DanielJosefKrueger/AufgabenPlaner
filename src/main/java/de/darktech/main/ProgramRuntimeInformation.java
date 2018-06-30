@@ -1,4 +1,4 @@
-package de.darktech.visual;
+package de.darktech.main;
 
 import de.darktech.tickets.Planing;
 

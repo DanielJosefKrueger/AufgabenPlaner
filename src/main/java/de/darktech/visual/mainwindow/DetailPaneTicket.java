@@ -1,4 +1,4 @@
-package de.darktech.visual;
+package de.darktech.visual.mainwindow;
 
 import de.darktech.tickets.Ticket;
 import javafx.scene.layout.GridPane;

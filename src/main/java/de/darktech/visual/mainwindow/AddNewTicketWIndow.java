@@ -1,10 +1,9 @@
-package de.darktech.visual;
+package de.darktech.visual.mainwindow;
 
 import de.darktech.exceptions.InvalidInputException;
+import de.darktech.main.ProgramRuntimeInformation;
 import de.darktech.tickets.Ticket;
-import javafx.event.ActionEvent;
-import javafx.event.Event;
-import javafx.event.EventHandler;
+import de.darktech.visual.mainwindow.MainWindow;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.DatePicker;
@@ -12,7 +11,6 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import java.time.LocalDate;
@@ -24,7 +22,7 @@ public class AddNewTicketWIndow extends Stage {
 
     private final MainWindow origin;
 
-    AddNewTicketWIndow(MainWindow origin){
+    public AddNewTicketWIndow(MainWindow origin){
         this.origin = origin;
         this.setTitle("My New Stage Title");
         StackPane root = new StackPane();
@@ -49,8 +47,6 @@ public class AddNewTicketWIndow extends Stage {
 
 
         TicketInputForm(MainWindow mainwindow){
-
-
             //name
             Label nameLabel = new Label("Name:");
             nameField = new TextField();

@@ -1,6 +1,7 @@
-package de.darktech.visual;
+package de.darktech.visual.mainwindow;
 
 import de.darktech.tickets.Ticket;
+import de.darktech.main.ProgramRuntimeInformation;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
@@ -17,7 +18,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static de.darktech.visual.MainWindow.COLOR_BACKGROUND_TICKET_HEADLINE;
+import static de.darktech.visual.mainwindow.MainWindow.COLOR_BACKGROUND_TICKET_HEADLINE;
 
 public class TicketGrid extends GridPane {
 
@@ -36,7 +37,6 @@ public class TicketGrid extends GridPane {
 
     TicketGrid(MainWindow mainWindow){
         this.mainWindow = mainWindow;
-
         this.setHgap(10);
         this.setVgap(10);
 
@@ -48,10 +48,19 @@ public class TicketGrid extends GridPane {
         col3.setMinWidth(200);
         this.getColumnConstraints().addAll(col1,col2,col3);
 
+        columnInformations.add(new ColumnInformation(0,SELECT_STR));
+        columnInformations.add(new ColumnInformation(1,IN_PROGRESS_STR));
+        columnInformations.add(new ColumnInformation(2,DONE_STR));
+        initHeadlines();
+
+    }
+
+    private void initHeadlines() {
+
+
 
         Font fontHeadline = Font.font("Arial", FontWeight.BOLD, 20);
 
-        columnInformations.add(new ColumnInformation(0,SELECT_STR));
         columnToTicketIndex.put(0, 1);
         TextField selectTextField = new TextField();
         selectTextField.setText(SELECT_STR);
@@ -67,7 +76,6 @@ public class TicketGrid extends GridPane {
         progressTextField.setEditable(false);
         progressTextField.setStyle("-fx-control-inner-background: " + COLOR_BACKGROUND_TICKET_HEADLINE + ";");
         this.add(progressTextField, 1, 0);
-        columnInformations.add(new ColumnInformation(1,IN_PROGRESS_STR));
         columnToTicketIndex.put(1, 1);
 
 
@@ -77,10 +85,8 @@ public class TicketGrid extends GridPane {
         doneTextField.setEditable(false);
         doneTextField.setStyle("-fx-control-inner-background: " + COLOR_BACKGROUND_TICKET_HEADLINE + ";");
         this.add(doneTextField, 2, 0);
-        columnInformations.add(new ColumnInformation(2,DONE_STR));
+
         columnToTicketIndex.put(2, 1);
-
-
     }
 
 
@@ -108,6 +114,7 @@ public class TicketGrid extends GridPane {
                 });
                 System.out.println("Adding " + ticket +" to view row:" + rowNumber + " column:" +colNumber);
                 columnToTicketIndex.put(colNumber, rowNumber+1);
+                return;
             }
         }
     }
@@ -122,18 +129,19 @@ public class TicketGrid extends GridPane {
 
 
     public void addTicketsFromPlaning(){
+        System.out.println("------ Adding Tickets to Grid -------");
+        System.out.println(ProgramRuntimeInformation.get().getPlaning());
         for (Ticket ticket : ProgramRuntimeInformation.get().getPlaning().getTickets()) {
             addTicketToGrid(ticket);
         }
     }
 
     public void removeAllTicketsFromGrid(){
-        // reset indexes of tickets for all columns
-        for (Map.Entry<Integer, Integer> entry : columnToTicketIndex.entrySet()) {
-            entry.setValue(0);
-        }
+
         ObservableList<Node> nodes = this.getChildren();
         nodes.clear();
+
+        initHeadlines();
     }
 
 

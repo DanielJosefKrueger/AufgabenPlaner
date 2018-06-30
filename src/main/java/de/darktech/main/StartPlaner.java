@@ -1,6 +1,6 @@
 package de.darktech.main;
 
-import de.darktech.visual.MainWindow;
+import de.darktech.visual.mainwindow.MainWindow;
 
 public class StartPlaner {
 

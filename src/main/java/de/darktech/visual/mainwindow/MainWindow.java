@@ -1,12 +1,10 @@
-package de.darktech.visual;
+package de.darktech.visual.mainwindow;
 
 import de.darktech.Util;
 import de.darktech.tickets.Planing;
 import de.darktech.tickets.Ticket;
+import de.darktech.main.ProgramRuntimeInformation;
 import javafx.application.Application;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
-import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
@@ -15,14 +13,14 @@ import javafx.stage.Stage;
 import java.time.Instant;
 import java.util.*;
 
-import static de.darktech.visual.TicketGrid.IN_PROGRESS_STR;
+import static de.darktech.visual.mainwindow.TicketGrid.IN_PROGRESS_STR;
 
 
 public class MainWindow extends Application {
 
 
     public static final String COLOR_BACKGROUND_TICKET_HEADLINE = "#f4f1f1";
-    
+
     private TicketGrid ticketGrid;
     private StackPane body;
     private  BorderPane rootBorderPane;
@@ -33,32 +31,6 @@ public class MainWindow extends Application {
         this.rootBorderPane.setRight(detailPaneTicket);
     }
 
-    public HBox getNavigation() {
-        HBox hbox = new HBox();
-        hbox.setPadding(new Insets(15, 12, 15, 12));
-        hbox.setSpacing(10);
-        hbox.setStyle("-fx-background-color: #336699;");
-
-        Button buttonCurrent = new Button("Save");
-        buttonCurrent.setPrefSize(100, 20);
-
-        Button buttonNewTicket = new Button("New Ticket");
-        buttonNewTicket.setPrefSize(100, 20);
-        MainWindow origin = this;
-        buttonNewTicket.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-               new AddNewTicketWIndow(origin);
-            }
-        });
-
-
-        Button buttonProjected = new Button("Load");
-        buttonProjected.setPrefSize(100, 20);
-        hbox.getChildren().addAll(buttonCurrent, buttonProjected, buttonNewTicket);
-
-        return hbox;
-    }
 
 
 
@@ -74,7 +46,7 @@ public class MainWindow extends Application {
         Scene scene = new Scene(root, 1200, 600);
 
         rootBorderPane = new BorderPane();
-        rootBorderPane.setTop(getNavigation());
+        rootBorderPane.setTop(new MenueBar(this,ProgramRuntimeInformation.get().getPlaning()));
         ticketGrid = new TicketGrid(this);
         rootBorderPane.setCenter(ticketGrid);
         body.getChildren().add(rootBorderPane);
@@ -94,7 +66,9 @@ public class MainWindow extends Application {
         List<Ticket> tickets = new ArrayList<>();
         tickets.add(new Ticket("AufgabePlaner erstellen" , "BeispielDescription", 1, IN_PROGRESS_STR, Date.from(Instant.now())));
         tickets.add(new Ticket("Zweites Ticket adden" , "Quidquid agis prudenter agas et respice", 2, IN_PROGRESS_STR, Util.addDays(Date.from(Instant.now()), 2)));
-        Planing planing = new Planing(tickets);
+        Planing planing =  Planing.get();
+        System.out.println(planing);
+        planing.addTickets(tickets);
         ProgramRuntimeInformation.get().setPlaning(planing);
         MainWindow window = new MainWindow();
         launch(args);

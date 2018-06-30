@@ -2,6 +2,7 @@ package de.darktech.tickets;
 
 import org.apache.commons.lang3.time.FastDateFormat;
 
+import java.text.DateFormat;
 import java.util.Date;
 
 public class Ticket {
@@ -22,6 +23,15 @@ public class Ticket {
         this.state = state;
         this.dueDate = dueDate;
     }
+
+    public Ticket(String name, String description, int id, String state, long dueDate) {
+        this.name = name;
+        this.description = description;
+        this.id = id;
+        this.state = state;
+        this.dueDate = new Date(dueDate);
+    }
+
 
     public String getState() {
         return state;
@@ -46,4 +56,17 @@ public class Ticket {
     public String getDateString() {
         return format.format(dueDate);
     }
+
+
+    @Override
+    public String toString() {
+        return "Ticket{" +
+                "name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", id=" + id +
+                ", state='" + state + '\'' +
+                ", dueDate=" + dueDate +
+                '}';
+    }
 }
+
