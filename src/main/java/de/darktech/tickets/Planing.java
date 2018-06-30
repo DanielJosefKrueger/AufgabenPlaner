@@ -3,7 +3,6 @@ package de.darktech.tickets;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.darktech.exceptions.UnableToLoadException;
 import de.darktech.exceptions.UnableToSaveException;
-import sun.security.krb5.internal.Ticket;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -14,7 +13,7 @@ public class Planing {
     private static final ObjectMapper mapper = new ObjectMapper();
     private final List<Ticket> tickets = new ArrayList<>();
 
-    private Planing(List<Ticket> tickets){
+    public Planing(List<Ticket> tickets){
         this.tickets.addAll(tickets);
     }
 
@@ -49,5 +48,12 @@ public class Planing {
     }
 
 
+    public List<Ticket> getTickets() {
+        return tickets;
+    }
+
+    public void addTicket(Ticket ticket){
+        this.tickets.add(ticket);
+    }
 
 }

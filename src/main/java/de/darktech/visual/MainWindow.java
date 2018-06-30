@@ -1,13 +1,18 @@
 package de.darktech.visual;
 
+import com.sun.scenario.effect.impl.sw.sse.SSEBlend_SRC_OUTPeer;
 import de.darktech.Util;
+import de.darktech.tickets.Planing;
 import de.darktech.tickets.Ticket;
 import javafx.application.Application;
+import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.event.EventType;
 import javafx.geometry.Insets;
 import javafx.geometry.Rectangle2D;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseButton;
@@ -31,6 +36,7 @@ public class MainWindow extends Application {
     private GridPane ticketGrid;
     private List<ColumnInformation> columnInformations = new ArrayList<>();
     private Map<Integer, Integer> columnToTicketIndex = new HashMap<>();
+    private StackPane body;
 
 
     private  BorderPane rootBorderPane;
@@ -50,9 +56,36 @@ public class MainWindow extends Application {
     }
 
 
+
+    public void refreshTickets(){
+        System.out.println("Refresh");
+        removeAllTicketsFromGrid();
+        addTicketsFromPlaning();
+    }
+
+
+    public void addTicketsFromPlaning(){
+        for (Ticket ticket : ProgramRuntimeInformation.get().getPlaning().getTickets()) {
+            addTicketToGrid(ticket);
+        }
+    }
+
+    public void removeAllTicketsFromGrid(){
+        // reset indexes of tickets for all columns
+        for (Map.Entry<Integer, Integer> entry : columnToTicketIndex.entrySet()) {
+            entry.setValue(0);
+        }
+
+
+
+        ObservableList<Node> nodes = ticketGrid.getChildren();
+        nodes.clear();
+
+    }
+
+
     public void addTicketToGrid(Ticket ticket){
         String state = ticket.getState();
-
         for (ColumnInformation information : columnInformations) {
             if(information.getName().equals(state)){
                 int colNumber = information.getNumber();
@@ -65,7 +98,6 @@ public class MainWindow extends Application {
                     public void handle(MouseEvent event) {
                         if(event.getButton().compareTo(MouseButton.PRIMARY)==0){
                             if(event.getSource().getClass().equals(TicketPane.class)){
-
                                 TicketPane pane = (TicketPane) event.getSource();
                                 System.out.println(pane.getTicket());
                                 displayDetailOfTicket(pane.getTicket());
@@ -74,13 +106,10 @@ public class MainWindow extends Application {
                         }
                     }
                 });
-
-
                 System.out.println("Adding " + ticket +" to view row:" + rowNumber + " column:" +colNumber);
                 columnToTicketIndex.put(colNumber, rowNumber+1);
             }
         }
-
     }
 
 
@@ -102,6 +131,14 @@ public class MainWindow extends Application {
 
         Button buttonNewTicket = new Button("New Ticket");
         buttonNewTicket.setPrefSize(100, 20);
+        MainWindow origin = this;
+        buttonNewTicket.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+               new AddNewTicketWIndow(origin);
+            }
+        });
+
 
         Button buttonProjected = new Button("Load");
         buttonProjected.setPrefSize(100, 20);
@@ -166,27 +203,38 @@ public class MainWindow extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         System.out.println("hallo");
-        StackPane root = new StackPane();
+        ScrollPane root = new ScrollPane();
+        body = new StackPane();
+        root.setContent(body);
         Scene scene = new Scene(root, 1200, 600);
 
         rootBorderPane = new BorderPane();
         rootBorderPane.setTop(getNavigation());
         ticketGrid = getTicketGrid();
         rootBorderPane.setCenter(ticketGrid);
-        root.getChildren().add(rootBorderPane);
+        body.getChildren().add(rootBorderPane);
+        this.addTicketsFromPlaning();
+        this.refreshTickets();
+        this.refreshTickets();
 
         primaryStage.setTitle("Planer");
         primaryStage.setScene(scene);
         primaryStage.show();
-        addTicketToGrid(new Ticket("AufgabePlaner erstellen" , "BeispielDescription", 1, IN_PROGRESS_STR, Date.from(Instant.now())));
-        addTicketToGrid(new Ticket("Zweites Ticket adden" , "Quidquid agis prudenter agas et respice", 2, IN_PROGRESS_STR, Util.addDays(Date.from(Instant.now()), 2)));
+
 
     }
 
 
     public static void main(String[] args) {
+        List<Ticket> tickets = new ArrayList<>();
+        tickets.add(new Ticket("AufgabePlaner erstellen" , "BeispielDescription", 1, IN_PROGRESS_STR, Date.from(Instant.now())));
+        tickets.add(new Ticket("Zweites Ticket adden" , "Quidquid agis prudenter agas et respice", 2, IN_PROGRESS_STR, Util.addDays(Date.from(Instant.now()), 2)));
+        Planing planing = new Planing(tickets);
+        ProgramRuntimeInformation.get().setPlaning(planing);
         MainWindow window = new MainWindow();
+        ProgramRuntimeInformation.get().setWindow(window);
         launch(args);
+
     }
 
 
