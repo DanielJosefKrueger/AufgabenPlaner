@@ -1,5 +1,9 @@
 package de.darktech.tickets;
 
+import org.apache.commons.lang3.time.FastDateFormat;
+
+import java.util.Date;
+
 public class Ticket {
 
 
@@ -7,12 +11,16 @@ public class Ticket {
     private final String description;
     private final int id;
     private final String state;
+    private final Date dueDate;
 
-    public Ticket(String name, String description, int id, String state) {
+    public static final FastDateFormat format =  FastDateFormat.getInstance("dd-MM-yyyy hh");
+
+    public Ticket(String name, String description, int id, String state, Date dueDate) {
         this.name = name;
         this.description = description;
         this.id = id;
         this.state = state;
+        this.dueDate = dueDate;
     }
 
     public String getState() {
@@ -29,5 +37,13 @@ public class Ticket {
 
     public int getId() {
         return id;
+    }
+
+    public Date getDueDate() {
+        return dueDate;
+    }
+
+    public String getDateString() {
+        return format.format(dueDate);
     }
 }

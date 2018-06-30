@@ -1,11 +1,17 @@
 package de.darktech.visual;
 
+import de.darktech.Util;
 import de.darktech.tickets.Ticket;
 import javafx.application.Application;
+import javafx.event.Event;
+import javafx.event.EventHandler;
+import javafx.event.EventType;
 import javafx.geometry.Insets;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -14,10 +20,8 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.time.Instant;
+import java.util.*;
 
 
 public class MainWindow extends Application {
@@ -29,6 +33,8 @@ public class MainWindow extends Application {
     private Map<Integer, Integer> columnToTicketIndex = new HashMap<>();
 
 
+    private  BorderPane rootBorderPane;
+
     public static final String SELECT_STR = "Selected";
     public static final String IN_PROGRESS_STR = "In Progress";
     public static final String DONE_STR = "Done";
@@ -38,7 +44,10 @@ public class MainWindow extends Application {
 
 
 
-
+    private void displayDetailOfTicket(Ticket ticket){
+        DetailPaneTicket detailPaneTicket = new DetailPaneTicket(ticket);
+        this.rootBorderPane.setRight(detailPaneTicket);
+    }
 
 
     public void addTicketToGrid(Ticket ticket){
@@ -48,7 +57,25 @@ public class MainWindow extends Application {
             if(information.getName().equals(state)){
                 int colNumber = information.getNumber();
                 Integer rowNumber = columnToTicketIndex.get(colNumber);
-                ticketGrid.add(getPanelForTicket(ticket), colNumber, rowNumber );
+                GridPane panelForTicket = getPanelForTicket(ticket);
+                ticketGrid.add(panelForTicket, colNumber, rowNumber );
+
+                panelForTicket.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
+                    @Override
+                    public void handle(MouseEvent event) {
+                        if(event.getButton().compareTo(MouseButton.PRIMARY)==0){
+                            if(event.getSource().getClass().equals(TicketPane.class)){
+
+                                TicketPane pane = (TicketPane) event.getSource();
+                                System.out.println(pane.getTicket());
+                                displayDetailOfTicket(pane.getTicket());
+                            }
+
+                        }
+                    }
+                });
+
+
                 System.out.println("Adding " + ticket +" to view row:" + rowNumber + " column:" +colNumber);
                 columnToTicketIndex.put(colNumber, rowNumber+1);
             }
@@ -60,22 +87,7 @@ public class MainWindow extends Application {
 
 
     private GridPane getPanelForTicket(Ticket ticket){
-        GridPane grid = new GridPane();
-        grid.setHgap(10);
-        grid.setVgap(10);
-
-
-        Text name = new Text(ticket.getName());
-        name.setFont(Font.font("Arial", FontWeight.BOLD, 20));
-        grid.add(name, 0, 0);
-
-        Text description = new Text(ticket.getDescription());
-        description.setFont(Font.font("Arial", FontWeight.NORMAL, 12));
-        grid.add(description, 0, 1);
-
-        grid.setStyle("-fx-background-color: " + COLOR_BACKGROUND_TICKET_HEADLINE + ";");
-
-        return grid;
+      return new TicketPane(ticket);
     }
 
 
@@ -88,9 +100,12 @@ public class MainWindow extends Application {
         Button buttonCurrent = new Button("Save");
         buttonCurrent.setPrefSize(100, 20);
 
+        Button buttonNewTicket = new Button("New Ticket");
+        buttonNewTicket.setPrefSize(100, 20);
+
         Button buttonProjected = new Button("Load");
         buttonProjected.setPrefSize(100, 20);
-        hbox.getChildren().addAll(buttonCurrent, buttonProjected);
+        hbox.getChildren().addAll(buttonCurrent, buttonProjected, buttonNewTicket);
 
         return hbox;
     }
@@ -117,6 +132,7 @@ public class MainWindow extends Application {
         columnToTicketIndex.put(0, 1);
         TextField selectTextField = new TextField();
         selectTextField.setText(SELECT_STR);
+        selectTextField.setEditable(false);
         selectTextField.setFont(fontHeadline);
         selectTextField.setStyle("-fx-control-inner-background: " + COLOR_BACKGROUND_TICKET_HEADLINE + ";");
         grid.add(selectTextField, 0, 0);
@@ -125,6 +141,7 @@ public class MainWindow extends Application {
         TextField progressTextField = new TextField();
         progressTextField.setText(IN_PROGRESS_STR);
         progressTextField.setFont(fontHeadline);
+        progressTextField.setEditable(false);
         progressTextField.setStyle("-fx-control-inner-background: " + COLOR_BACKGROUND_TICKET_HEADLINE + ";");
         grid.add(progressTextField, 1, 0);
         columnInformations.add(new ColumnInformation(1,IN_PROGRESS_STR));
@@ -134,11 +151,11 @@ public class MainWindow extends Application {
         TextField doneTextField = new TextField();
         doneTextField.setText(DONE_STR);
         doneTextField.setFont(fontHeadline);
+        doneTextField.setEditable(false);
         doneTextField.setStyle("-fx-control-inner-background: " + COLOR_BACKGROUND_TICKET_HEADLINE + ";");
         grid.add(doneTextField, 2, 0);
         columnInformations.add(new ColumnInformation(2,DONE_STR));
         columnToTicketIndex.put(2, 1);
-
 
         return grid;
 
@@ -152,18 +169,17 @@ public class MainWindow extends Application {
         StackPane root = new StackPane();
         Scene scene = new Scene(root, 1200, 600);
 
-
-        BorderPane border = new BorderPane();
-        border.setTop(getNavigation());
+        rootBorderPane = new BorderPane();
+        rootBorderPane.setTop(getNavigation());
         ticketGrid = getTicketGrid();
-        border.setCenter(ticketGrid);
-        root.getChildren().add(border);
+        rootBorderPane.setCenter(ticketGrid);
+        root.getChildren().add(rootBorderPane);
 
         primaryStage.setTitle("Planer");
         primaryStage.setScene(scene);
         primaryStage.show();
-        addTicketToGrid(new Ticket("AufgabePlaner erstellen" , "BeispielDescription", 1, IN_PROGRESS_STR));
-        addTicketToGrid(new Ticket("Zweites Ticket adden" , "Quidquid agis prudenter agas et respice", 2, IN_PROGRESS_STR));
+        addTicketToGrid(new Ticket("AufgabePlaner erstellen" , "BeispielDescription", 1, IN_PROGRESS_STR, Date.from(Instant.now())));
+        addTicketToGrid(new Ticket("Zweites Ticket adden" , "Quidquid agis prudenter agas et respice", 2, IN_PROGRESS_STR, Util.addDays(Date.from(Instant.now()), 2)));
 
     }
 
