@@ -9,7 +9,7 @@ public class ProgramRuntimeInformation {
 
     private static  ProgramRuntimeInformation INSTANCE = null;
     private Planing planing = null;
-    private MainWindow window = null;
+
 
     private ProgramRuntimeInformation(){
     }
@@ -30,11 +30,5 @@ public class ProgramRuntimeInformation {
         this.planing = planing;
     }
 
-    public MainWindow getWindow() {
-        return window;
-    }
 
-    public void setWindow(MainWindow window) {
-        this.window = window;
-    }
 }
