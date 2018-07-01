@@ -27,7 +27,7 @@ public class MainWindow extends Application {
 
 
     protected void displayDetailOfTicket(Ticket ticket){
-        DetailPaneTicket detailPaneTicket = new DetailPaneTicket(ticket);
+        DetailPaneTicket detailPaneTicket = new DetailPaneTicket(ticket, this);
         this.rootBorderPane.setRight(detailPaneTicket);
     }
 
@@ -46,6 +46,7 @@ public class MainWindow extends Application {
         Scene scene = new Scene(root, 1200, 600);
 
         rootBorderPane = new BorderPane();
+        rootBorderPane.setPrefSize(1200, 600);
         rootBorderPane.setTop(new MenueBar(this,ProgramRuntimeInformation.get().getPlaning()));
         ticketGrid = new TicketGrid(this);
         rootBorderPane.setCenter(ticketGrid);

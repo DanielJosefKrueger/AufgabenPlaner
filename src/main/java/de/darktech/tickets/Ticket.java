@@ -11,8 +11,8 @@ public class Ticket {
     private final String name;
     private final String description;
     private final int id;
-    private final String state;
-    private final Date dueDate;
+    private String state;
+    private Date dueDate;
 
     public static final FastDateFormat format =  FastDateFormat.getInstance("dd-MM-yyyy hh");
 
@@ -67,6 +67,14 @@ public class Ticket {
                 ", state='" + state + '\'' +
                 ", dueDate=" + dueDate +
                 '}';
+    }
+
+    public void setState(String state) {
+        this.state = state;
+    }
+
+    public void setDueDate(Date dueDate) {
+        this.dueDate = dueDate;
     }
 }
 

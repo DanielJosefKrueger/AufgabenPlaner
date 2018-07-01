@@ -27,7 +27,7 @@ public class AddNewTicketWIndow extends Stage {
         this.setTitle("My New Stage Title");
         StackPane root = new StackPane();
         this.setScene(new Scene(root, 450, 450));
-        TicketInputForm ticketInputForm = new TicketInputForm(origin);
+        TicketInputForm ticketInputForm = new TicketInputForm(origin, this);
         root.getChildren().add(ticketInputForm);
         this.show();
         System.out.println(origin);
@@ -46,7 +46,7 @@ public class AddNewTicketWIndow extends Stage {
         private final DatePicker dateInput;
 
 
-        TicketInputForm(MainWindow mainwindow){
+        TicketInputForm(MainWindow mainwindow, AddNewTicketWIndow parent){
             //name
             Label nameLabel = new Label("Name:");
             nameField = new TextField();
@@ -68,12 +68,12 @@ public class AddNewTicketWIndow extends Stage {
             this.add(dateLabel, 0 ,2);
             this.add(dateInput, 1,2);
 
-
             Button buttonNewTicket = new Button("Add Ticket");
             buttonNewTicket.setOnAction(event -> {
                 try {
                     ProgramRuntimeInformation.get().getPlaning().addTicket(getTicket());
                     mainwindow.refreshTickets();
+                    parent.hide();
                 } catch (InvalidInputException e) {
                     e.printStackTrace();
                 }

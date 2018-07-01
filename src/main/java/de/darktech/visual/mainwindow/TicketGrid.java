@@ -41,11 +41,14 @@ public class TicketGrid extends GridPane {
         this.setVgap(10);
 
         ColumnConstraints col1 = new ColumnConstraints();
-        col1.setMinWidth(200);
+        col1.setMinWidth(300);
+        col1.setMaxWidth(300);
         ColumnConstraints col2 = new ColumnConstraints();
-        col2.setMinWidth(200);
+        col2.setMinWidth(300);
+        col2.setMaxWidth(300);
         ColumnConstraints col3 = new ColumnConstraints();
-        col3.setMinWidth(200);
+        col3.setMinWidth(300);
+        col3.setMaxWidth(300);
         this.getColumnConstraints().addAll(col1,col2,col3);
 
         columnInformations.add(new ColumnInformation(0,SELECT_STR));
